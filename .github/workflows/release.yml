@@ -187,6 +187,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "=== Building Tauri App for macOS ==="
+          echo "Target: ${{ matrix.target }}"
+          echo "Arch: ${{ matrix.arch }}"
           if [ -n "${APPLE_SIGNING_IDENTITY:-}" ]; then
             echo "✅ 使用 APPLE_SIGNING_IDENTITY=$APPLE_SIGNING_IDENTITY 进行签名"
           else
@@ -194,6 +197,8 @@ jobs:
             unset APPLE_SIGNING_IDENTITY
           fi
           npm run tauri:build -- --target ${{ matrix.target }} --bundles app,dmg
+          echo "=== Build completed ==="
+          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/ || true
 
       - name: Build Tauri App (Windows)
         if: matrix.os == 'windows-2022'
@@ -201,7 +206,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "=== Building Tauri App for Windows ==="
+          echo "Target: ${{ matrix.target }}"
+          echo "Arch: ${{ matrix.arch }}"
           npm run tauri:build -- --target ${{ matrix.target }} --bundles app,nsis
+          echo "=== Build completed ==="
+          ls -la src-tauri/target/${{ matrix.target }}/release/bundle/ || true
 
       - name: Verify codesign (optional)
         shell: bash
