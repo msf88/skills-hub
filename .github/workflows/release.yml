@@ -70,8 +70,11 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          # Install Strawberry Perl for OpenSSL build (required by openssl-sys)
+          choco install -y strawberryperl
+          # Add Strawberry Perl to PATH
+          export PATH="/c/Strawberry/perl/bin:$PATH"
           # WebView2 Runtime is pre-installed on windows-2022 runner
-          # No additional installation needed
           rustup target add ${{ matrix.target }}
 
       - name: Install frontend deps
@@ -210,6 +213,8 @@ jobs:
           echo "=== Building Tauri App for Windows ==="
           echo "Target: ${{ matrix.target }}"
           echo "Arch: ${{ matrix.arch }}"
+          # Add Strawberry Perl to PATH for OpenSSL build
+          export PATH="/c/Strawberry/perl/bin:$PATH"
           npm run tauri:build -- --target ${{ matrix.target }} --bundles nsis
           echo "=== Build completed ==="
           ls -la src-tauri/target/${{ matrix.target }}/release/bundle/ || true
