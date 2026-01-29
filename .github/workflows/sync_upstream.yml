@@ -1,0 +1,80 @@
+# 工作流名称：定义该 Actions 工作流的标识，用于 GitHub 页面显示
+name: Upstream Sync
+
+# 权限配置：明确该工作流拥有的仓库操作权限，确保同步和 issue 操作能正常执行
+permissions:
+  contents: write  # 授予「仓库内容」写入权限（用于拉取、合并、推送代码）
+  issues: write    # 授予「Issues」写入权限（用于创建/关闭同步失败通知 issue）
+  actions: write   # 授予「Actions」写入权限（用于操作工作流相关配置，保障同步流程顺畅）
+
+# 触发条件：定义工作流何时执行，包含两种触发方式
+on:
+  # 定时触发：使用 cron 表达式设置执行频率（UTC 时区）
+  schedule:
+    # cron 表达式格式：分 时 日 月 周
+    # 此处配置为「每 6 小时执行一次」：0 分、每 6 小时、任意日、任意月、任意周
+    - cron: '0 */6 * * *' # every 6 hours
+  # 手动触发：允许在 GitHub 仓库的 Actions 页面手动点击「Run workflow」执行，便于测试和紧急同步
+  workflow_dispatch:
+
+# 工作流任务定义：一个工作流可包含多个 jobs，此处仅定义同步核心任务
+jobs:
+  # 任务名称：sync_latest_from_upstream（同步上游仓库最新提交）
+  sync_latest_from_upstream:
+    # 任务显示名称：在 Actions 执行记录中展示的名称
+    name: Sync latest commits from upstream repo
+    # 任务运行环境：选择最新版 Ubuntu 系统（GitHub 提供的托管运行环境，兼容性好）
+    runs-on: ubuntu-latest
+    # 条件判断：仅当当前仓库是 Fork 仓库时，才执行该任务（避免在原仓库上误执行同步逻辑）
+    if: ${{ github.event.repository.fork }}
+
+    # 任务步骤：按顺序执行的具体操作（从检出代码到同步验证）
+    steps:
+      # 步骤 1：检出当前 Fork 仓库的代码到运行环境
+      # 使用官方 checkout 动作 v4 版本，确保能正常拉取仓库文件
+      - uses: actions/checkout@v4
+
+      # 步骤 2：清理历史同步失败的 issue 通知
+      # 使用 actions-cool/issues-helper 工具 v3 版本，简化 issue 批量操作
+      - name: Clean issue notice
+        uses: actions-cool/issues-helper@v3
+        with:
+          # 执行的动作：关闭符合条件的 issues
+          actions: 'close-issues'
+          # 筛选条件：关闭所有带有「🚨 Sync Fail」标签的 issue
+          labels: '🚨 Sync Fail'
+
+      # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
+      # 使用 aormsby/Fork-Sync-With-Upstream-action 工具 v3.4 版本（专门用于 Fork 仓库同步的成熟动作）
+      - name: Sync upstream changes
+        id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
+          upstream_sync_repo: qufei1993/skills-hub
+          # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
+          upstream_sync_branch: main
+          # 配置项 3：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
+          target_sync_branch: main
+          # 配置项 4：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+          # 配置项 5：测试模式开关（false 表示真实执行同步推送，true 仅模拟流程不实际修改仓库）
+          test_mode: false
+
+      # 步骤 4：同步结果校验与失败通知
+      # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
+      - name: Sync check
+        if: failure()
+        uses: actions-cool/issues-helper@v3
+        with:
+          # 执行的动作：创建一个新的 issue
+          actions: 'create-issue'
+          # issue 标题：明确标注「同步失败」，便于快速识别
+          title: '🚨 Sync Fail | 同步失败'
+          # 给新建 issue 添加标签，便于筛选和后续清理
+          labels: '🚨 Sync Fail'
+          # issue 正文内容：同时提供英文和中文说明，告知失败原因和处理方式，并附带参考截图
+          body: |
+            Due to a change in the workflow file of the upstream repository, GitHub has automatically suspended the scheduled automatic update. You need to manually sync your fork. 
+            由于上游仓库的工作流文件发生了更改，GitHub 已自动暂停了计划的自动更新。您需要手动同步您的分叉仓库。
+            ![](https://github-production-user-asset-6210df.s3.amazonaws.com/17870709/273954625-df80c890-0822-4ac2-95e6-c990785cbed5.png)
