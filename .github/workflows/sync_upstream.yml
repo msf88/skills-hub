@@ -27,15 +27,18 @@ jobs:
     runs-on: ubuntu-latest
     # 条件判断：仅当当前仓库是 Fork 仓库时，才执行该任务（避免在原仓库上误执行同步逻辑）
     if: ${{ github.event.repository.fork }}
+    # 环境变量配置：强制使用 Node.js 24 版本（确保与上游仓库同步工具兼容）
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 全局作用于整个 job
 
     # 任务步骤：按顺序执行的具体操作（从检出代码到同步验证）
     steps:
       # 步骤 1：检出当前 Fork 仓库的代码到运行环境
-      # 使用官方 checkout 动作 v4 版本，确保能正常拉取仓库文件
-      - uses: actions/checkout@v4
+      # 使用官方 checkout 动作 v5 版本，确保能正常拉取仓库文件
+      - uses: actions/checkout@v5
 
       # 步骤 2：清理历史同步失败的 issue 通知
-      # 使用 actions-cool/issues-helper 工具 v4 版本，简化 issue 批量操作
+      # 使用 actions-cool/issues-helper 工具 v3 版本，简化 issue 批量操作
       - name: Clean issue notice
         uses: actions-cool/issues-helper@v3
         with:
