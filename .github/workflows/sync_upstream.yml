@@ -37,7 +37,7 @@ jobs:
       # 步骤 2：清理历史同步失败的 issue 通知
       # 使用 actions-cool/issues-helper 工具 v4 版本，简化 issue 批量操作
       - name: Clean issue notice
-        uses: actions-cool/issues-helper@v3.7
+        uses: actions-cool/issues-helper@v3
         with:
           # 执行的动作：关闭符合条件的 issues
           actions: 'close-issues'
@@ -65,7 +65,7 @@ jobs:
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
       - name: Sync check
         if: failure()
-        uses: actions-cool/issues-helper@v3.7
+        uses: actions-cool/issues-helper@v3
         with:
           # 执行的动作：创建一个新的 issue
           actions: 'create-issue'
