@@ -65,7 +65,7 @@ jobs:
       # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
-        uses: aormsby/Fork-Sync-With-Upstream-action@3.4
+        uses: aormsby/Fork-Sync-With-Upstream-action@3
         with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           upstream_sync_repo: qufei1993/skills-hub
