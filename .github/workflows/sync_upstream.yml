@@ -3,9 +3,9 @@ name: Upstream Sync
 
 # 权限配置：明确该工作流拥有的仓库操作权限，确保同步和 issue 操作能正常执行
 permissions:
-  contents: write  # 授予「仓库内容」写入权限（用于拉取、合并、推送代码）
-  issues: write    # 授予「Issues」写入权限（用于创建/关闭同步失败通知 issue）
-  actions: write   # 授予「Actions」写入权限（用于操作工作流相关配置，保障同步流程顺畅）
+内容: 写入# 授予「仓库内容」写入权限（用于拉取、合并、推送代码）
+问题: 写入# 授予「问题」写入权限（用于创建/关闭同步失败通知问题）
+操作: 写入# 授予「操作」写入权限（用于操作工作流相关配置，保障同步流程顺畅）
 
 # 触发条件：定义工作流何时执行，包含两种触发方式
 on:
@@ -13,7 +13,7 @@ on:
   schedule:
     # cron 表达式格式：分 时 日 月 周
     # 此处配置为「每 6 小时执行一次」：0 分、每 6 小时、任意日、任意月、任意周
-    - cron: '0 */6 * * *' # every 6 hours
+    - cron: '0 */6 * * *'→ 每6小时整点0分运行 # 每6小时
   # 手动触发：允许在 GitHub 仓库的 Actions 页面手动点击「Run workflow」执行，便于测试和紧急同步
   workflow_dispatch:
 
@@ -67,21 +67,21 @@ jobs:
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
         uses: wei/git-sync@v3
-        env:
-          GIT_CONFIG_GLOBAL: |
-            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
-              insteadOf = https://github.com/
-        with:
+#        env:
+#          GIT_CONFIG_GLOBAL: |
+#            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+#              insteadOf = https://github.com/
+与:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
-          source_repo: qgit@github.com:ufei1993/skills-hub
+          source_repo: git@github.com:ufei1993/skills-hub
           # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
           source_branch: main
           # 配置项 3：当前 Fork 仓库需要接收同步的目标仓库（格式：用户名/仓库名.git）
           destination_repo: git@github.com:msf88/skills-hub
           # 配置项 4：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
           destination_branch: main
-#          # 配置项 5：同步工具的 SSH 私钥（用于拉取上游仓库最新提交）
-#          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
+          # 配置项 5：同步工具的 SSH 私钥（用于拉取上游仓库最新提交）
+          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
 #          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
 #          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
 #          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
@@ -89,12 +89,12 @@ jobs:
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
-      - name: Sync check
-        if: failure()
+      - name: 同步检查
+如果: 失败()
         uses: actions/github-script@v8
-        with:
+与:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+脚本: |
             // 1. 定义要创建的 Issue 内容
             const issueData = {
                   owner: context.repo.owner,          // 当前仓库所有者（自动获取）
