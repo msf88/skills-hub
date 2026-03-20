@@ -38,9 +38,9 @@ jobs:
       - uses: actions/checkout@v5
 
       # 步骤 2：清理历史同步失败的 issue 通知
-      # 使用 actions/github-script 动作 v7 版本，直接在 GitHub Actions 环境中执行 JavaScript 代码
+      # 使用 actions/github-script 动作 v8 版本，直接在 GitHub Actions 环境中执行 JavaScript 代码
       - name: Clean issue notice
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // 获取带「🚨 Sync Fail」标签的开放 Issue
@@ -85,18 +85,28 @@ jobs:
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
       - name: Sync check
         if: failure()
-        uses: actions-cool/issues-helper@v3
+        uses: actions/github-script@v8
         with:
-          # 执行的动作：创建一个新的 issue
-          actions: 'create-issue'
-          # issue 标题：明确标注「同步失败」，便于快速识别
-          title: '🚨 Sync Fail | 同步失败'
-          # 给新建 issue 添加标签，便于筛选和后续清理
-          labels: '🚨 Sync Fail'
-          # issue 正文内容：同时提供英文和中文说明，告知失败原因和处理方式，并附带参考截图
-          body: |
-            同步上游仓库失败！请手动执行以下操作：
-            1. 克隆你的Fork仓库：git clone https://github.com/你的用户名/skills-hub.git
-            2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
-            3. 拉取上游更新：git pull upstream main
-            4. 推送本地：git push origin main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. 定义要创建的 Issue 内容
+            const issueData = {
+              owner: context.repo.owner,          // 当前仓库所有者（自动获取）
+              repo: context.repo.repo,            // 当前仓库名（自动获取）
+              title: '🚨 Sync Fail | 同步失败',   // Issue 标题，和原配置一致
+              labels: ['🚨 Sync Fail'],           // Issue 标签，数组格式
+              body: `同步上游仓库失败！请手动执行以下操作：
+              1. 克隆你的Fork仓库：git clone https://github.com/${context.repo.owner}/skills-hub.git
+              2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
+              3. 拉取上游更新：git pull upstream main
+              4. 推送本地：git push origin main`  // Issue 正文，自动填充仓库所有者
+              };
+              
+              // 2. 调用 GitHub API 创建 Issue
+              try {
+                const response = await github.rest.issues.create(issueData);
+                console.log(`✅ 同步失败通知 Issue 创建成功：#${response.data.number}`);
+              } catch (error) {
+                console.error(`❌ 创建 Issue 失败：${error.message}`);
+                throw error;  // 抛出错误，让 Actions 步骤显示失败
+              }
