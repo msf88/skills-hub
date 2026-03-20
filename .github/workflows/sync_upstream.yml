@@ -58,7 +58,7 @@ jobs:
           # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
           source_branch: main
           # 配置项 3：当前 Fork 仓库需要接收同步的目标仓库（格式：用户名/仓库名.git）
-          destination_repo: qufei1993/skills-hub
+          destination_repo: msf88/skills-hub
           # 配置项 4：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
           destination_branch: main
           # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
