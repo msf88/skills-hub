@@ -76,10 +76,12 @@ jobs:
           destination_repo: git@github.com:msf88/skills-hub
           # 配置项 4：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
           destination_branch: main
-          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
-          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-          destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
+          # 配置项 5：同步工具的 SSH 私钥（用于拉取上游仓库最新提交）
+          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
+#          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+#          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
+#          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+#          destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
