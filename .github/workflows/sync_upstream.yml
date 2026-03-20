@@ -67,10 +67,10 @@ jobs:
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
         uses: wei/git-sync@v3
-#        env:
-#          GIT_CONFIG_GLOBAL: |
-#            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
-#              insteadOf = https://github.com/
+        env:
+          GIT_CONFIG_GLOBAL: |
+            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+              insteadOf = https://github.com/
         with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           source_repo: git@github.com:ufei1993/skills-hub
@@ -81,8 +81,8 @@ jobs:
           # 配置项 4：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
           destination_branch: main
           # 配置项 5：同步工具的 SSH 私钥（用于拉取上游仓库最新提交）
-          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
-#          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+#          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
+          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
 #          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
 #          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
 #          destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
