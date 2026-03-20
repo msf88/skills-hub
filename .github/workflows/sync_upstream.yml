@@ -62,28 +62,29 @@ jobs:
               });
             }
 
+        
         # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
         - name: Sync upstream changes
-        id: sync
-        run: |
-          # 配置 Git 用户名和邮箱（必填，否则推送会报错）
-          git config --global user.name "msf88"
-          git config --global user.email "shaofengma88@qq.com"
-          
-          # 配置 Token 认证（避免 HTTPS 无权限问题）
-          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"
-          
-          # 添加上游仓库地址
-          git remote add upstream https://github.com/qufei1993/skills-hub.git
-          
-          # 拉取上游仓库最新提交
-          git fetch upstream main
-          
-          # 合并上游代码（无编辑模式，避免交互）
-          git merge upstream/main --no-edit
-          
-          # 推送到当前 Fork 仓库
-          git push origin main   
+          id: sync
+          run: |
+            # 配置 Git 用户名和邮箱（必填，否则推送会报错）
+            git config --global user.name "msf88"
+            git config --global user.email "shaofengma88@qq.com"
+            
+            # 配置 Token 认证（避免 HTTPS 无权限问题）
+            git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"
+            
+            # 添加上游仓库地址
+            git remote add upstream https://github.com/qufei1993/skills-hub.git
+            
+            # 拉取上游仓库最新提交
+            git fetch upstream main
+            
+            # 合并上游代码（无编辑模式，避免交互）
+            git merge upstream/main --no-edit
+            
+            # 推送到当前 Fork 仓库
+            git push origin main   
 
 #      # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
 #      # 使用 aormsby/Fork-Sync-With-Upstream-action 工具 v3.4 版本（专门用于 Fork 仓库同步的成熟动作）
