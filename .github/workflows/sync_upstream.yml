@@ -69,19 +69,17 @@ jobs:
         uses: wei/git-sync@v3
         with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
-          source_repo: qufei1993/skills-hub
+          source_repo: qgit@github.com:ufei1993/skills-hub
           # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
           source_branch: main
           # 配置项 3：当前 Fork 仓库需要接收同步的目标仓库（格式：用户名/仓库名.git）
-          destination_repo: msf88/skills-hub
+          destination_repo: git@github.com:msf88/skills-hub
           # 配置项 4：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
           destination_branch: main
           # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      #          # 配置项 5：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-#          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
-#          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-#          destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
+          source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
+          # 配置项 6：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+          destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
