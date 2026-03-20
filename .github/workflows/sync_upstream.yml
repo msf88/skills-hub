@@ -30,6 +30,9 @@ jobs:
     # 环境变量配置：强制使用 Node.js 24 版本（确保与上游仓库同步工具兼容）
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 全局作用于整个 job
+      GIT_CONFIG_GLOBAL: |
+        [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+          insteadOf = https://github.com/
 
     # 任务步骤：按顺序执行的具体操作（从检出代码到同步验证）
     steps:
@@ -64,14 +67,10 @@ jobs:
 
       # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
       # 使用 aormsby/Fork-Sync-With-Upstream-action 工具 v3.4 版本（专门用于 Fork 仓库同步的成熟动作）
-      - name: Sync upstream changes
-        id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
-        uses: wei/git-sync@v3
-        env:
-          GIT_CONFIG_GLOBAL: |
-            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
-              insteadOf = https://github.com/
-        with:
+      - name: 同步上游更改
+id: sync# 为该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
+用途: wei/git-sync@v3
+与:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           source_repo: git@github.com:ufei1993/skills-hub
           # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
@@ -89,19 +88,19 @@ jobs:
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
-      - name: Sync check
-        if: failure()
+      - name: 同步检查
+如果: 失败()
         uses: actions/github-script@v8
-        with:
+与:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+脚本: |
             // 1. 定义要创建的 Issue 内容
             const issueData = {
                   owner: context.repo.owner,          // 当前仓库所有者（自动获取）
                   repo: context.repo.repo,            // 当前仓库名（自动获取）
                   title: '🚨 Sync Fail | 同步失败',   // Issue 标题，和原配置一致
                   labels: ['🚨 Sync Fail'],           // Issue 标签，数组格式
-                  body: `同步上游仓库失败！请手动执行以下操作：
+正文: `同步上游仓库失败！请手动执行以下操作：
                   1. 克隆你的Fork仓库：git clone https://github.com/${context.repo.owner}/skills-hub.git
                   2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
                   3. 拉取上游更新：git pull upstream main
