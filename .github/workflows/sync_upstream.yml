@@ -30,9 +30,6 @@ jobs:
     # 环境变量配置：强制使用 Node.js 24 版本（确保与上游仓库同步工具兼容）
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 全局作用于整个 job
-      GIT_CONFIG_GLOBAL: |
-        [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
-          insteadOf = https://github.com/
 
     # 任务步骤：按顺序执行的具体操作（从检出代码到同步验证）
     steps:
@@ -70,6 +67,10 @@ jobs:
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
         uses: wei/git-sync@v3
+        env:
+          GIT_CONFIG_GLOBAL: |
+            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+              insteadOf = https://github.com/
         with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           source_repo: qufei1993/skills-hub
