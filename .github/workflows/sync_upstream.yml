@@ -30,6 +30,9 @@ jobs:
     # 环境变量配置：强制使用 Node.js 24 版本（确保与上游仓库同步工具兼容）
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 全局作用于整个 job
+      GIT_CONFIG_GLOBAL: |
+        [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+          insteadOf = https://github.com/
 
     # 任务步骤：按顺序执行的具体操作（从检出代码到同步验证）
     steps:
