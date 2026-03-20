@@ -78,6 +78,8 @@ jobs:
           labels: '🚨 Sync Fail'
           # issue 正文内容：同时提供英文和中文说明，告知失败原因和处理方式，并附带参考截图
           body: |
-            Due to a change in the workflow file of the upstream repository, GitHub has automatically suspended the scheduled automatic update. You need to manually sync your fork. 
-            由于上游仓库的工作流文件发生了更改，GitHub 已自动暂停了计划的自动更新。您需要手动同步您的分叉仓库。
-            ![](https://github-production-user-asset-6210df.s3.amazonaws.com/17870709/273954625-df80c890-0822-4ac2-95e6-c990785cbed5.png)
+            同步上游仓库失败！请手动执行以下操作：
+            1. 克隆你的Fork仓库：git clone https://github.com/你的用户名/skills-hub.git
+            2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
+            3. 拉取上游更新：git pull upstream main
+            4. 推送本地：git push origin main
