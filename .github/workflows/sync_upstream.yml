@@ -91,22 +91,22 @@ jobs:
           script: |
             // 1. 定义要创建的 Issue 内容
             const issueData = {
-              owner: context.repo.owner,          // 当前仓库所有者（自动获取）
-              repo: context.repo.repo,            // 当前仓库名（自动获取）
-              title: '🚨 Sync Fail | 同步失败',   // Issue 标题，和原配置一致
-              labels: ['🚨 Sync Fail'],           // Issue 标签，数组格式
-              body: `同步上游仓库失败！请手动执行以下操作：
-              1. 克隆你的Fork仓库：git clone https://github.com/${context.repo.owner}/skills-hub.git
-              2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
-              3. 拉取上游更新：git pull upstream main
-              4. 推送本地：git push origin main`  // Issue 正文，自动填充仓库所有者
+                  owner: context.repo.owner,          // 当前仓库所有者（自动获取）
+                  repo: context.repo.repo,            // 当前仓库名（自动获取）
+                  title: '🚨 Sync Fail | 同步失败',   // Issue 标题，和原配置一致
+                  labels: ['🚨 Sync Fail'],           // Issue 标签，数组格式
+                  body: `同步上游仓库失败！请手动执行以下操作：
+                  1. 克隆你的Fork仓库：git clone https://github.com/${context.repo.owner}/skills-hub.git
+                  2. 添加上游仓库：git remote add upstream https://github.com/qufei1993/skills-hub.git
+                  3. 拉取上游更新：git pull upstream main
+                  4. 推送本地：git push origin main`  // Issue 正文，自动填充仓库所有者
               };
               
-              // 2. 调用 GitHub API 创建 Issue
-              try {
+            // 2. 调用 GitHub API 创建 Issue
+            try {
                 const response = await github.rest.issues.create(issueData);
                 console.log(`✅ 同步失败通知 Issue 创建成功：#${response.data.number}`);
-              } catch (error) {
+            } catch (error) {
                 console.error(`❌ 创建 Issue 失败：${error.message}`);
                 throw error;  // 抛出错误，让 Actions 步骤显示失败
-              }
+            }
