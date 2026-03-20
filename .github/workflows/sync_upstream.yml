@@ -61,12 +61,12 @@ jobs:
                 state: 'closed'
               });
             }
-
-        
-        # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
-        - name: Sync upstream changes
-          id: sync
-          run: |
+            
+      # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
+      # 使用 aormsby/Fork-Sync-With-Upstream-action 工具 v3.4 版本（专门用于 Fork 仓库同步的成熟动作）
+      - name: Sync with upstream repo
+        id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
+        run: |
             # 配置 Git 用户名和邮箱（必填，否则推送会报错）
             git config --global user.name "msf88"
             git config --global user.email "shaofengma88@qq.com"
@@ -84,8 +84,8 @@ jobs:
             git merge upstream/main --no-edit
             
             # 推送到当前 Fork 仓库
-            git push origin main   
-
+            git push origin main
+            
 #      # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
 #      # 使用 aormsby/Fork-Sync-With-Upstream-action 工具 v3.4 版本（专门用于 Fork 仓库同步的成熟动作）
 #      - name: Sync upstream changes
