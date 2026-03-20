@@ -67,6 +67,10 @@ jobs:
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
         uses: wei/git-sync@v3
+        env:
+          GIT_CONFIG_GLOBAL: |
+            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
+              insteadOf = https://github.com/
         with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           source_repo: qgit@github.com:ufei1993/skills-hub
