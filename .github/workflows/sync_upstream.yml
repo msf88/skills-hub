@@ -65,31 +65,18 @@ jobs:
       # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
       - name: Sync upstream changes
         id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
-        uses: TobKed/github-forks-sync-action@master
+        uses: aormsby/Fork-Sync-With-Upstream-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upstream_repository: msd88/skills-hub
-          target_repository: qufei1993/skills-hub
-          upstream_branch: main
-          target_branch: main
-          force: true
-          tags: true
-
-#      # 步骤 3：核心同步操作：拉取上游仓库最新提交并合并到当前 Fork 仓库
-#      - name: Sync upstream changes
-#        id: sync  # 给该步骤设置唯一 ID，便于后续步骤判断该步骤的执行结果（成功/失败）
-#        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-#        with:
-#          # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
-#          upstream_sync_repo: qufei1993/skills-hub
-#          # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
-#          upstream_sync_branch: main
-#          # 配置项 3：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
-#          target_sync_branch: main
-#          # 配置项 4：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
-#          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
-#          # 配置项 5：测试模式开关（false 表示真实执行同步推送，true 仅模拟流程不实际修改仓库）
-#          test_mode: false
+          # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
+          upstream_sync_repo: qufei1993/skills-hub
+          # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
+          upstream_sync_branch: main
+          # 配置项 3：当前 Fork 仓库需要接收同步的目标分支（此处为 main 分支，需与自身仓库分支保持一致）
+          target_sync_branch: main
+          # 配置项 4：Fork 仓库的推送令牌（GitHub 自动生成 GITHUB_TOKEN，无需手动在仓库 Secrets 中配置）
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+          # 配置项 5：测试模式开关（false 表示真实执行同步推送，true 仅模拟流程不实际修改仓库）
+          test_mode: false
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
