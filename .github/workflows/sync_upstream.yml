@@ -3,9 +3,9 @@ name: Upstream Sync
 
 # 权限配置：明确该工作流拥有的仓库操作权限，确保同步和 issue 操作能正常执行
 permissions:
-内容: 写入# 授予「仓库内容」写入权限（用于拉取、合并、推送代码）
-问题: 写入# 授予「问题」写入权限（用于创建/关闭同步失败通知问题）
-操作: 写入# 授予「操作」写入权限（用于操作工作流相关配置，保障同步流程顺畅）
+  contents: write  # 授予「仓库内容」写入权限（用于拉取、合并、推送代码）
+  issues: write    # 授予「Issues」写入权限（用于创建/关闭同步失败通知 issue）
+  actions: write   # 授予「Actions」写入权限（用于操作工作流相关配置，保障同步流程顺畅）
 
 # 触发条件：定义工作流何时执行，包含两种触发方式
 on:
@@ -13,7 +13,7 @@ on:
   schedule:
     # cron 表达式格式：分 时 日 月 周
     # 此处配置为「每 6 小时执行一次」：0 分、每 6 小时、任意日、任意月、任意周
-    - cron: '0 */6 * * *'→ 每6小时整点0分运行 # 每6小时
+    - cron: '0 */6 * * *' # every 6 hours
   # 手动触发：允许在 GitHub 仓库的 Actions 页面手动点击「Run workflow」执行，便于测试和紧急同步
   workflow_dispatch:
 
@@ -71,7 +71,7 @@ jobs:
 #          GIT_CONFIG_GLOBAL: |
 #            [url "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com"]
 #              insteadOf = https://github.com/
-与:
+        with:
           # 配置项 1：上游仓库地址（格式：用户名/仓库名，对应原仓库的 GitHub 地址）
           source_repo: git@github.com:ufei1993/skills-hub
           # 配置项 2：上游仓库需要同步的分支（此处为 main 分支，需与原仓库分支保持一致）
@@ -89,12 +89,12 @@ jobs:
 
       # 步骤 4：同步结果校验与失败通知
       # 条件判断：仅当步骤 3（id: sync）执行失败时，才执行该步骤
-      - name: 同步检查
-如果: 失败()
+      - name: Sync check
+        if: failure()
         uses: actions/github-script@v8
-与:
+        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-脚本: |
+          script: |
             // 1. 定义要创建的 Issue 内容
             const issueData = {
                   owner: context.repo.owner,          // 当前仓库所有者（自动获取）
